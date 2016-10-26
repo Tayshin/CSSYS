@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/tx 
+	http://www.springframework.org/schema/tx/spring-tx.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context.xsd">
+    <!-- 配置扫瞄注解service,controller -->  
+    <context:annotation-config/>  
+    <context:component-scan base-package="扫瞄的包名">  
+<!--         <context:exclude-filter type="annotation" expression="cn.bonoon.controllers.*"/> -->  
+    </context:component-scan>  
+  
+    <!-- 配置数据库连接 -->  
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">  
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>  
+        <property name="url" value="jdbc:mysql://localhost:3306/cssys?useUnicode=true&amp;characterEncoding=utf8"/>  
+        <property name="username" value="root"/>  
+        <property name="password" value="123456"/>  
+    </bean>  
+    <!-- 配置hibernate相关信息 -->  
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">  
+        <property name="dataSource" ref="dataSource"/>  
+        <property name="hibernateProperties">  
+            <props>  
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>  
+                <prop key="hibernate.show_sql">true</prop>  
+                <prop key="hibernate.hbm2ddl.auto">update</prop>  
+            </props>  
+        </property>  
+          
+            <!-- 以下列表写入实体类 -->  
+        <property name="annotatedClasses">  
+            <list>
+               <value>com.cssys.domain.Account</value>
+               <value>com.cssys.domain.Course</value>
+               <value>com.cssys.domain.Student</value>
+            </list>  
+        </property>  
+    </bean>  
+    <bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">  
+        <property name="sessionFactory" ref="sessionFactory"/>  
+    </bean>  
+    <!-- 使用annotation定义事务 -->  
+    <tx:annotation-driven transaction-manager="transactionManager" />  
+    
+    <bean id="hibernateUtils" class="com.cssys.Utils.HibernateUtils">
+        <property name="sessionFactory" ref="sessionFactory"/> 
+    </bean>
+    <bean id="accountDao" class="com.cssys.daoImpl.AccountDaoImpl"></bean>
+    <bean id="courseDao" class="com.cssys.daoImpl.CourseDaoImpl"></bean>
+    <bean id="studentDao" class="com.cssys.daoImpl.StudentDaoImpl"></bean>
+    <bean id="accountService" class="com.cssys.serviceImpl.AccountServiceImpl">
+        <property name="accountDao" ref="accountDao"></property>
+        <property name="studentDao" ref="studentDao"></property>
+    </bean>
+    <bean id="studentService" class="com.cssys.serviceImpl.StudentServiceImpl">
+        <property name="studentDao" ref="studentDao"></property>
+        <property name="courseDao" ref="courseDao"></property>
+    </bean>
+    <bean id="courseService" class="com.cssys.serviceImpl.CourseServiceImpl">
+        <property name="courseDao" ref="courseDao"></property>
+    </bean>
+</beans>  

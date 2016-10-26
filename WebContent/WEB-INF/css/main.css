@@ -1,0 +1,11 @@
+body,button, input, select, textarea,h1 ,h2, h3, h4, h5, h6 { font-family: Microsoft YaHei;}
+body{
+    background-color: #ffffff;
+}
+h1{
+	color:#FFFFFF;
+}
+
+#headerlines{
+	background-color:#1CC09F;
+}
